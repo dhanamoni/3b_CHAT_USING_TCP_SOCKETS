@@ -8,7 +8,70 @@ To write a python program for creating Chat using TCP Sockets Links.
  server
 4. Send and receive the message using the send function in socket.
 ## PROGRAM
+## Server:
+~~~
+import socket
+import threading
+
+def handle_client(client_socket):
+    while True:
+        try:
+            # Receive message from client
+            message = client_socket.recv(1024).decode()
+            if not message:
+                break
+            print(f"Received message: {message}")
+
+            # Send message back to client
+            client_socket.sendall(message.encode())
+        except:
+            break
+
+    client_socket.close()
+
+def start_server():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind(('127.0.0.1', 5555))
+    server_socket.listen(5)
+    print("Server started, listening on port 5555")
+
+    while True:
+        client_socket, addr = server_socket.accept()
+        print(f"Accepted connection from {addr}")
+        client_handler = threading.Thread(target=handle_client, args=(client_socket,))
+        client_handler.start()
+
+start_server()
+~~~
+## Client:
+~~~
+import socket
+
+def start_client():
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect(('127.0.0.1', 5555))
+
+    while True:
+        message = input("Enter message to send to server (or type 'exit' to quit): ")
+        if message.lower() == 'exit':
+            break
+        client_socket.sendall(message.encode())
+
+        # Receive response from server
+        response = client_socket.recv(1024).decode()
+        print(f"Received from server: {response}")
+
+    client_socket.close()
+
+start_client()
+~~~
 ## OUPUT
+## Server:
+![Screenshot 2024-10-17 213758](https://github.com/user-attachments/assets/ebc9e500-a250-4156-baeb-561c0c33adb4)
+
+## Client:
+![Screenshot 2024-10-17 213813](https://github.com/user-attachments/assets/884cc6c6-15e1-4e6f-8480-545923dd5454)
+
 ## RESULT
 Thus, the python program for creating Chat using TCP Sockets Links was successfully 
 created and executed.
